@@ -3,7 +3,7 @@ const firebaseConfig=require('../admin &conf/config');
 const {validateLoginData}= require('../validate/check');
 
 const firebase= require('firebase');
-firebase.initializeApp(firebaseConfig);
+//firebase.initializeApp(firebaseConfig);
 
 
 exports.login=(req, res)=>{
