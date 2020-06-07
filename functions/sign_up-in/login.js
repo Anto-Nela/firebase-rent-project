@@ -3,22 +3,24 @@ const firebaseConfig=require('../admin &conf/config');
 const {validateLoginData}= require('../validate/check');
 
 const firebase= require('firebase');
-//firebase.initializeApp(firebaseConfig);
-
 
 exports.login=(req, res)=>{
     const user={
         email: req.body.email,
         password: req.body.password
     };
+    var userId;
+
     const {valid, errors}=validateLoginData(user);
     if(!valid) return res.status(406).json(errors);
     
     else {
     firebase.auth().signInWithEmailAndPassword(user.email,user.password).then((data)=>{
+        username=data.user.username;
+        userId=data.user.uid;
         return data.user.getIdToken();
     }).then((tokeni)=>{
-        return res.json({token: tokeni, username: user.username, userId: user.userId });
+        return res.json({token: tokeni, userId: userId });
     })
     .catch((err)=>{
         console.error(err);

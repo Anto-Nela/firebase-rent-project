@@ -3,8 +3,6 @@ const firebaseConfig= require('../admin &conf/config');
 const {validateSignupData}= require('../validate/check');
 
 const firebase= require('firebase');
-//firebase.initializeApp(firebaseConfig);
-
 
 exports.register=(req, res)=>{
     const user1={

@@ -1,5 +1,4 @@
 const {admin,db}=require('../admin &conf/admin');
-const firebaseConfig=require('../admin &conf/config');
 
 
 exports.getAllHomes=(req, res)=>{
