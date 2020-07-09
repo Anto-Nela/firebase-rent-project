@@ -55,14 +55,19 @@ exports.getByLandlordId=(req,res)=>{
 
 //Get all normal homes
 exports.getNormalHomes= (req,res)=>{
+    res.set('Cache-Control','public, max-age=300, s-maxage=600');
+
     db.collection("homes").where('premium','==',false).get()
     .then((data)=>{
         var homes=[];
         data.forEach((doc)=>{
             homes.push(doc.data());
         });
-        console.log(homes.length);
-        return res.json(homes);
+        if(homes.length<=8){
+            return res.json(homes.slice(0,homes.length));
+        }
+        else return res.json(homes.slice(0,8));
+
     }).catch((err)=>{
        return res.status(500).json(`${err}`);
     });
@@ -71,14 +76,19 @@ exports.getNormalHomes= (req,res)=>{
 
 //get all premium homes
 exports.getPremiumHomes= (req,res)=>{
+    res.set('Cache-Control','public, max-age=300, s-maxage=600');
+    
     db.collection("homes").where('premium','==',true).get()
     .then((data)=>{
         var homes=[];
         data.forEach((doc)=>{
             homes.push(doc.data());
         });
-        console.log(homes.length);
-        return res.json(homes);
+        if(homes.length<=9){
+            return res.json(homes.slice(0,homes.length));
+        }
+        else return res.json(homes.slice(0,9));
+
     }).catch((err)=>{
        return res.status(500).json(`${err}`);
     });
@@ -105,36 +115,34 @@ function deg2rad(deg) {
 
   //find homes that are near a home
   exports.findNearMe=(req, res)=>{
-    const lati = req.params.lat;
-    const longi = req.params.long;
+    var lat = req.params.lat;
+    var long = req.params.long;
 
     var nearMeHomes = [];
-    lat = parseFloat(lati);
-    long = parseFloat(longi);
+    lat = parseFloat(lat);
+    long = parseFloat(long);
 
-    try{
         db.collection('homes').get().then((data)=>{
-            var homes=[];
             data.forEach((doc)=>{
-                homes.push(doc.data());
-            });
+                if(doc.data().lat!=undefined){
+                    elem= getDistanceFromLatLonInKm(lat, long,
+                    doc.data().location.lat, doc.data().location.long);
 
-        for(var i=0; i<homes.length;i++) {
-          elem= getDistanceFromLatLonInKm(lat,long,
-            homes[i].location.lat,homes[i].location.long);
-              if (elem<=2) {
-                 nearMeHomes.push(homes[i]);
+                    if (elem<=2) {
+                         nearMeHomes.push(doc.data());
+                        } 
                 }
-            }
-              if(nearMeHomes.length==0) {
-               cb('No homes nearby found.');
-              }
-              else res.json(nearMeHomes); 
+                
+            });
+            if(nearMeHomes.length==0) {
+                return res.status(400).json({error: 'No homes nearby found.'});
+                }
+                else return res.json(nearMeHomes); 
+
+        }).catch((err)=>{
+            return res.status(502).json({error: `An error occurred. ${err}`});
         });
 
-        }catch(err){
-            res.status(502).json({error: `An error occurred. ${err}`});
-          }
   };
   
   

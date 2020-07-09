@@ -1,5 +1,5 @@
 const isEmpty= (astring)=>{
-    if(astring.trim()==='') return true;
+  if(!astring || astring.trim()=='') return true;
     else return false;
 };
 

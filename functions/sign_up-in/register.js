@@ -33,13 +33,27 @@ exports.register=(req, res)=>{
     
     }).then((tokeni)=>{
         token1=tokeni;
+        if(user1.type=='landlord'){
+            const userInfo1={
+                username: user1.username,
+                email: user1.email,
+                type: user1.type,
+                landlordId: userId
+            };
+            return db.doc(`/landlords/${user1.username}`).set(userInfo1);
+        }
+       else{ 
+        
         const userInfo={
             username: user1.username,
             email: user1.email,
             type: user1.type,
             userId: userId
         };
-       return db.doc(`/users/${user1.username}`).set(userInfo);
+
+            return db.doc(`/users/${user1.username}`).set(userInfo);
+        }
+       
     }).then(()=>{
         return res.json({token: token1, username: user1.username, userId: userId});
     })

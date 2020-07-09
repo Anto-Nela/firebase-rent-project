@@ -2,18 +2,24 @@ const functions = require('firebase-functions');
 const express= require('express');
 const app=express();
 const firebaseConfig=require('./admin &conf/config');
+const cors = require('cors');
+const firebase= require('firebase');
 
 const {getAllHomes,getNormalHomes,getByLandlordId,
     getPremiumHomes,findNearMe, getHomesById}= require('./gets/gethomes');
 const {searchHomes}= require('./gets/searchHomes');
 const {register}=require('./sign_up-in/register');
-const {login}= require('./sign_up-in/login');
+const {login,googleLogin}= require('./sign_up-in/login');
 //const {postAllHomes}= require('./add/add50Homes');
 const {addHome}= require('./add/addHome');
 const {fbAuth}= require('./tokenAuth/fbAuth');
 const {getAllUsers, getUsersById}= require('./gets/getUsers');
+const {logout}= require('./sign_up-in/logout');
 
-const firebase= require('firebase');
+
+app.use(cors());
+app.use(express.json());
+
 firebase.initializeApp(firebaseConfig);
 
 //get homes
@@ -35,6 +41,9 @@ app.post('/register', register);
 //login
 app.post('/login',login);
 
+//logout
+app.post('/logout', logout);
+
 /*shton 50 shtepi direkt, MOS E PERDOR 
 app.post('/add50homes', postAllHomes);
 Shton id e shpive MOS E PERDOR
@@ -44,5 +53,8 @@ app.get('/setIds', setHomesId);
 
 //shto 1 shtepi
 app.post('/add/home/:id',fbAuth, addHome);
+
+
+
 
  exports.api = functions.region('europe-west2').https.onRequest(app);
